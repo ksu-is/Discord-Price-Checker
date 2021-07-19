@@ -2,20 +2,25 @@
 
 ## Sprint 1
 ***
+- [x] Join KSU-IS github
 - [x] Create ReadMe.md and Project Road Map file and license
-- [] Clone example repository over to Project Repositiory
+- [x] Clone example repository https://github.com/merto-dvp/python-rspricebot 
 - [] Test example repository to evaluate for use and document errors
+- [] Update Roadmap if needed
 
 ## Sprint 2
 ***
 - [] Use test repository and tutorial example to create base bot with no functions and test use to understand how to bring bot online/offline as well as communicate with discord
 - [] Begin implementing at least one website scrape, identify issues to resolve
 - [] Use first scraped site as model for other two sites, identify problems to troubleshoot
+- [] Update Roadmap if needed
 
 ## Sprint 3
 ***
 - [] Finish scrapping function for remaining sites
+- [] Create PowerPoint slide
 - [] Troubleshoot remaining errors 
+- [] Give presentation
 
 ## Extras(time permiting)
 - [] Add ability to pull list of games from sites according to a catagory (time permitting)
