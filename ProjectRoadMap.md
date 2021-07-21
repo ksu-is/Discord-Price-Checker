@@ -5,11 +5,12 @@
 - [x] Join KSU-IS github
 - [x] Create ReadMe.md and Project Road Map file and license
 - [x] Clone example repository https://github.com/merto-dvp/python-rspricebot 
-- [] Test example repository to evaluate for use and document errors
-- [] Update Roadmap if needed
+- [x] Test example repository to evaluate for use and document errors
+- [x] Update Roadmap if needed
 
 ## Sprint 2
 ***
+- [] Work with calling other python files and using .env files for sensitive login information
 - [] Use test repository and tutorial example to create base bot with no functions and test use to understand how to bring bot online/offline as well as communicate with discord
 - [] Begin implementing at least one website scrape, identify issues to resolve
 - [] Use first scraped site as model for other two sites, identify problems to troubleshoot
