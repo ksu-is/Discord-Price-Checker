@@ -10,10 +10,12 @@
 
 ## Sprint 2
 ***
-- [] Work with calling other python files and using .env files for sensitive login information
-- [] Use test repository and tutorial example to create base bot with no functions and test use to understand how to bring bot online/offline as well as communicate with discord
-- [] Begin implementing at least one website scrape, identify issues to resolve
+- [X] Work with calling other python files and using .env files for sensitive login information
+- [X] Use test repository and tutorial example to create base bot with no functions and test use to understand how to bring bot online/offline as well as communicate with discord
+- [X] Begin implementing at least one website scrape, identify issues to resolve
 - [] Use first scraped site as model for other two sites, identify problems to troubleshoot
+- [] Need alterntive way to implement scrapping on Epic Game Store does not return html
+- [] Added shipping cost, format for ebay scrape (buy it now, best offer, or auction)
 - [] Update Roadmap if needed
 
 ## Sprint 3
