@@ -6,7 +6,7 @@ from discord import guild
 from dotenv import load_dotenv
 from discord.ext import commands
 import sys
-from webscrape import steam_grab
+from webscrape import *
 from bs4 import BeautifulSoup
 import requests
 
@@ -40,14 +40,22 @@ async def on_ready():
 @bot.command(name="price", help="Will pull the price of the game title from several sites, to call send \"\\price\" and the title of the game.")
 async def on_message(ctx,*,message):
     await ctx.send("Searching steam for "+message)
-    package= steam_grab(message)
-    titles=package[0]
-    summary=package[1]
-    url=package[2]
+    steam_package= steam_grab(message)
+    steam_titles=steam_package[0]
+    steam_summary=steam_package[1]
+    steam_url=steam_package[2]
 
-    await ctx.send("Top result from steam "+message+" is "+titles[0].title())
-    await ctx.send(summary)
-    await ctx.send(url)
+    await ctx.send("Top result from steam "+message+" is "+steam_titles[0].title())
+    await ctx.send(steam_summary)
+    await ctx.send(steam_url)
+    ebay_package=ebay_grab(message)
+    await ctx.send("Searching ebay for "+message)
+    ebay_titles=ebay_package[0]
+    ebay_urls=ebay_package[1]
+    await ctx.send("Top three results from ebay for "+message+":")
+    await ctx.send(ebay_titles[0]+"\n"+ebay_titles[1]+"\n"+ebay_titles[2])
+
+
     
 
    

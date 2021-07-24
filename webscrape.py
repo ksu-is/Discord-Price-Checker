@@ -83,6 +83,16 @@ def ebay_grab(title):
     game_list=soup.find("div",id="srp-river-main")
     title_raw=game_list.find_all("h3",class_="s-item__title")
     price_raw=game_list.find_all("span",class_="s-item__price")
+    li_list=soup.find_all("div",class_="s-item__wrapper")
+    url_list=[]
+
+    for a in li_list:
+        link=a.find("a",class_="s-item__link")
+        url_list.append(link["href"])
+    #first url pulled is always a dead link with the second item in the list the first item for sale
+    del url_list[0]
+    format_raw=game_list.find_all("span",class_="s-item__purchase-options-with-icon")
+    shipping_raw=game_list.find_all("span",class_="s-item__shipping")
     #print(title_raw)
     title_list=[]
     index=0
@@ -93,12 +103,23 @@ def ebay_grab(title):
         title_list[index]=title_list[index].lower()
         index+=1
     index=0
+    #repeats above for different info adding to it the title
     for price in price_raw:
         cost=price.text
         title_list[index]=title_list[index]+"-------"+cost
         index+=1
-    for title in title_list:
-        print(title)
+    index=0
+    for formats in format_raw:
+        format=formats.text
+        title_list[index]=title_list[index]+"-------"+format
+        index+=1
+    index=0
+    for price in shipping_raw:
+        cost=price.text
+        title_list[index]=title_list[index]+"-------"+cost
+        index+=1
+    return title_list,url_list
+    
+    
 
 
-ebay_grab("frostpunk")
