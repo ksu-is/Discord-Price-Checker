@@ -54,10 +54,16 @@ async def on_message(ctx,*,message):
     ebay_urls=ebay_package[1]
     await ctx.send("Top three results from ebay for "+message+":")
     await ctx.send(ebay_titles[0]+"\n"+ebay_titles[1]+"\n"+ebay_titles[2])
+    epic_package=epic_grab(message)
+    await ctx.send("Searching Epic Game Store for "+message)
+    if type(epic_package) == list:
+        epic_games=epic_package[0]
+        epic_prices=epic_package[1]
+        await ctx.send("Top 5 results for Epic Game Store for "+message+':')
+        for games in epic_games:
+            await ctx.send(games)
+    else:
+        await ctx.send(epic_package)
 
-
-    
-
-   
 
 bot.run(TOKEN)

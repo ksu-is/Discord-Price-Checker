@@ -1,7 +1,10 @@
+
+
 from bs4 import BeautifulSoup
 from epicstore_api import EpicGamesStoreAPI
+import lxml
 import requests
-import os
+
 
 
 def steam_grab(title):
@@ -21,10 +24,15 @@ def steam_grab(title):
     summary_url=game_list.find("a").attrs['href']
     r=requests.get(summary_url).text
     soup = BeautifulSoup(r, 'lxml')
+    #pulls the summary text for the top result
     summary_raw=soup.find("div",class_="game_description_snippet")
-    summary=summary_raw.text
-    summary.strip()
-    summary=summary.strip("\r\n\t")
+    try: 
+        summary=summary_raw.text
+    except Exception:
+        summary="No summary found"
+    else:
+        summary.strip()
+        summary=summary.strip("\r\n\t")
     #pulls the titles and prices for all games on the page
     title_raw=game_list.find_all("span",class_="title")
     price_raw=game_list.find_all("div",class_="search_price")
@@ -47,31 +55,26 @@ def steam_grab(title):
     return title_list,summary,summary_url
 
 def epic_grab(title):
-    title=title.lower().replace(" ","%20")
-    #print(title)
-    search_url="https://www.epicgames.com/store/en-US/browse?q="+title+"&sortBy=relevance&sortDir=DESC&count=40&start=0"
-    print("->",search_url)
-    #pulls the html from the site
-    r=requests.get(search_url,headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:74.0) Gecko/20100101 Firefox/74.0'})
-    print(r.content)
-    soup = BeautifulSoup(r, 'lxml')
-
-    game_list=soup.find_all("div",class_="css-zgal9t-DiscoverCardLayout__component")
-    #title_raw=game_list.find_all("span",class_="css-2ucwu")
-    #price_raw=game_list.find_all("span",class_="css-1mc6sjq")
-    #title_list=[]
-    #for title in title_raw:
+    #found an interface made to interact with EpicGamesStore due to the use of javascript to make the pages that 
+    #negatated using beautiful soup
+ 
+    api = EpicGamesStoreAPI()
+    game_raw=api.fetch_store_games(count=5,keywords=title)
+    game_list=game_raw['data']['Catalog']['searchStore']['elements']
+    games=[]
+    prices=[]
+    if not game_list:
+       return "No games with title "+title+" where found :("
+    else:
+        for game in game_list:
+            games.append(game['title'])
+        index=0
         
-        #title_list.append(title.text)
-       # title_list[index]=title_list[index].lower()
-        #index+=1
-   # index=0
-    #for price in price_raw:
-     #   cost=price.text
-      #  cost=cost.strip()
-       # title_list[index]=title_list[index]+"-------"+cost
-        #index+=1
-    
+        for price in game_list:
+            games[index]=games[index]+"\nOrignal Price: "+price['price']['totalPrice']['fmtPrice']['originalPrice']+"\nDiscount Price: "+price['price']['totalPrice']['fmtPrice']['discountPrice']
+            prices.append(price['price']['totalPrice']['fmtPrice']['intermediatePrice'])
+            index+=1
+        return games,prices
     
 def ebay_grab(title):
     title=title.lower().replace(" ","+")
@@ -80,12 +83,29 @@ def ebay_grab(title):
     #pulls the html from the site
     r=requests.get(search_url).text
     soup = BeautifulSoup(r, 'lxml')
-    game_list=soup.find("div",id="srp-river-main")
-    title_raw=game_list.find_all("h3",class_="s-item__title")
+    game_list=soup.find("ul",id="srp-results")
+    
+    
+    
     price_raw=game_list.find_all("span",class_="s-item__price")
     li_list=soup.find_all("div",class_="s-item__wrapper")
+    li_list.pop(0)
+    listings=[]
+    
+    for li in li_list:
+    
+         title=li.find("h3",class_="s-item__title")
+         title=title.text   
+         print(title)
+         price=li.find("span",class_="s-item__price")
+         price=price.text   
+         print(price)
+         listings.append(title+"----"+price)
+         
+        
+            
     url_list=[]
-
+    
     for a in li_list:
         link=a.find("a",class_="s-item__link")
         url_list.append(link["href"])
@@ -102,7 +122,10 @@ def ebay_grab(title):
         title_list.append(title.text)
         title_list[index]=title_list[index].lower()
         index+=1
+
     index=0
+    print(len(title_raw))
+    print(len(price_raw))
     #repeats above for different info adding to it the title
     for price in price_raw:
         cost=price.text
@@ -117,9 +140,8 @@ def ebay_grab(title):
     for price in shipping_raw:
         cost=price.text
         title_list[index]=title_list[index]+"-------"+cost
-        index+=1
-    return title_list,url_list
-    
+        index+=1 
+    #return title_list,url_list
     
 
-
+ebay_grab("destroy all humans")
