@@ -59,19 +59,19 @@ def epic_grab(title):
     #negatated using beautiful soup
  
     api = EpicGamesStoreAPI()
-    game_raw=api.fetch_store_games(count=5,keywords=title)
+    game_raw=api.fetch_store_games(count=3,keywords=title)
     game_list=game_raw['data']['Catalog']['searchStore']['elements']
     games=[]
     prices=[]
     if not game_list:
-       return "No games with title "+title+" where found :("
+       return "No games with title "+title+" were found :("
     else:
         for game in game_list:
             games.append(game['title'])
         index=0
         
         for price in game_list:
-            games[index]=games[index]+"\nOrignal Price: "+price['price']['totalPrice']['fmtPrice']['originalPrice']+"\nDiscount Price: "+price['price']['totalPrice']['fmtPrice']['discountPrice']
+            games[index]=games[index]+"----Orignal Price: "+price['price']['totalPrice']['fmtPrice']['originalPrice']+"----Discount Price: "+price['price']['totalPrice']['fmtPrice']['discountPrice']
             prices.append(price['price']['totalPrice']['fmtPrice']['intermediatePrice'])
             index+=1
         return games,prices
@@ -83,11 +83,7 @@ def ebay_grab(title):
     #pulls the html from the site
     r=requests.get(search_url).text
     soup = BeautifulSoup(r, 'lxml')
-    game_list=soup.find("ul",id="srp-results")
     
-    
-    
-    price_raw=game_list.find_all("span",class_="s-item__price")
     li_list=soup.find_all("div",class_="s-item__wrapper")
     li_list.pop(0)
     listings=[]
@@ -96,14 +92,23 @@ def ebay_grab(title):
     
          title=li.find("h3",class_="s-item__title")
          title=title.text   
-         print(title)
+         
          price=li.find("span",class_="s-item__price")
          price=price.text   
-         print(price)
-         listings.append(title+"----"+price)
+
+         format=li.find("span",class_="s-item__purchase-options-with-icon")
+         if not format:
+             format=li.find("span",class_="s-item__bids")
+         format=format.text
+
+         shipping=li.find("span",class_="s-item__shipping")
+         if not shipping:
+             shipping=li.find("span",class_="POSITIVE BOLD")
+         shipping=shipping.text
          
-        
-            
+
+         listings.append(title+"----"+price+"----"+format+"----"+shipping)
+                
     url_list=[]
     
     for a in li_list:
@@ -111,37 +116,9 @@ def ebay_grab(title):
         url_list.append(link["href"])
     #first url pulled is always a dead link with the second item in the list the first item for sale
     del url_list[0]
-    format_raw=game_list.find_all("span",class_="s-item__purchase-options-with-icon")
-    shipping_raw=game_list.find_all("span",class_="s-item__shipping")
-    #print(title_raw)
-    title_list=[]
-    index=0
-    #takes only the text within the tags and creates a list that has the title and price in each index
-    for title in title_raw:
-        
-        title_list.append(title.text)
-        title_list[index]=title_list[index].lower()
-        index+=1
-
-    index=0
-    print(len(title_raw))
-    print(len(price_raw))
-    #repeats above for different info adding to it the title
-    for price in price_raw:
-        cost=price.text
-        title_list[index]=title_list[index]+"-------"+cost
-        index+=1
-    index=0
-    for formats in format_raw:
-        format=formats.text
-        title_list[index]=title_list[index]+"-------"+format
-        index+=1
-    index=0
-    for price in shipping_raw:
-        cost=price.text
-        title_list[index]=title_list[index]+"-------"+cost
-        index+=1 
-    #return title_list,url_list
+    
+    return listings,url_list
+    
     
 
-ebay_grab("destroy all humans")
+

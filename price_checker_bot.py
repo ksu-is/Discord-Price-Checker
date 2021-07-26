@@ -59,7 +59,7 @@ async def on_message(ctx,*,message):
     if type(epic_package) == list:
         epic_games=epic_package[0]
         epic_prices=epic_package[1]
-        await ctx.send("Top 5 results for Epic Game Store for "+message+':')
+        await ctx.send("Top 3 results for Epic Game Store for "+message+':')
         for games in epic_games:
             await ctx.send(games)
     else:
