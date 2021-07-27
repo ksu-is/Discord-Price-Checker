@@ -41,13 +41,17 @@ async def on_ready():
 async def on_message(ctx,*,message):
     await ctx.send("Searching steam for "+message)
     steam_package= steam_grab(message)
-    steam_titles=steam_package[0]
-    steam_summary=steam_package[1]
-    steam_url=steam_package[2]
+    if type(steam_package)==str:
+        await ctx.send(steam_package+"on Steam")
+    else:
+        steam_titles=steam_package[0]
+        steam_summary=steam_package[1]
+        steam_url=steam_package[2]
 
-    await ctx.send("Top result from steam "+message+" is "+steam_titles[0].title())
-    await ctx.send(steam_summary)
-    await ctx.send(steam_url)
+        await ctx.send("Top result from steam "+message+" is "+steam_titles[0].title())
+        await ctx.send(steam_summary)
+        await ctx.send(steam_url)
+        
     ebay_package=ebay_grab(message)
     await ctx.send("Searching ebay for "+message)
     ebay_titles=ebay_package[0]
@@ -56,13 +60,14 @@ async def on_message(ctx,*,message):
     await ctx.send(ebay_titles[0]+"\n"+ebay_titles[1]+"\n"+ebay_titles[2])
     epic_package=epic_grab(message)
     await ctx.send("Searching Epic Game Store for "+message)
-    if type(epic_package) == list:
-        epic_games=epic_package[0]
-        epic_prices=epic_package[1]
+    if type(epic_package) != str:
+        print(epic_package)
+        
         await ctx.send("Top 3 results for Epic Game Store for "+message+':')
-        for games in epic_games:
+        for games in epic_package:
             await ctx.send(games)
     else:
+        print(epic_package)
         await ctx.send(epic_package)
 
 

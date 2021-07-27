@@ -2,7 +2,6 @@
 
 from bs4 import BeautifulSoup
 from epicstore_api import EpicGamesStoreAPI
-import lxml
 import requests
 
 
@@ -17,42 +16,49 @@ def steam_grab(title):
     #pulls the html from the site
     r=requests.get(search_url).text
     soup = BeautifulSoup(r, 'lxml')
-
+    #will pull the 0 results text on the page if there are no results
+    results=soup.find("div",class_="search_results_count")
+    
     #filters html down to the list of games and other information
     game_list=soup.find("div",id="search_resultsRows")
-    #pull the url for the first game of the list and pulls the summary from that page
-    summary_url=game_list.find("a").attrs['href']
-    r=requests.get(summary_url).text
-    soup = BeautifulSoup(r, 'lxml')
-    #pulls the summary text for the top result
-    summary_raw=soup.find("div",class_="game_description_snippet")
-    try: 
-        summary=summary_raw.text
-    except Exception:
-        summary="No summary found"
+    #if nothing is found the game_list is empty and evaluates to false
+    if not game_list:
+        return results.text
     else:
-        summary.strip()
-        summary=summary.strip("\r\n\t")
-    #pulls the titles and prices for all games on the page
-    title_raw=game_list.find_all("span",class_="title")
-    price_raw=game_list.find_all("div",class_="search_price")
-    title_list=[]
-    index=0
-    #takes only the text within the tags and creates a list that has the title and price in each index
-    for title in title_raw:
+        #pull the url for the first game of the list and pulls the summary from that page
+        summary_url=game_list.find("a").attrs['href']
+        r=requests.get(summary_url).text
+        soup = BeautifulSoup(r, 'lxml')
+        #pulls the summary text for the top result
+        summary_raw=soup.find("div",class_="game_description_snippet")
+        try: 
+            summary=summary_raw.text
+        except Exception:
+            summary="No summary found"
+        else:
+            summary.strip()
+            summary=summary.strip("\r\n\t")
+        #pulls the titles and prices for all games on the page
+        title_raw=game_list.find_all("span",class_="title")
+        price_raw=game_list.find_all("div",class_="search_price")
+        title_list=[]
+        index=0
+        #takes only the text within the tags and creates a list that has the title and price in each index
+        for title in title_raw:
+            
+            title_list.append(title.text)
+            title_list[index]=title_list[index].replace('™',"").lower()
+            index+=1
+        index=0
+        for price in price_raw:
+            cost=price.text
+            cost=cost.strip()
+            cost=cost.strip("\r\n")
+            title_list[index]=title_list[index]+"-------"+cost
+            index+=1
+        return title_list,summary,summary_url
         
-        title_list.append(title.text)
-        title_list[index]=title_list[index].replace('™',"").lower()
-        index+=1
-    index=0
-    for price in price_raw:
-        cost=price.text
-        cost=cost.strip()
-        cost=cost.strip("\r\n")
-        title_list[index]=title_list[index]+"-------"+cost
-        index+=1
-    
-    return title_list,summary,summary_url
+         
 
 def epic_grab(title):
     #found an interface made to interact with EpicGamesStore due to the use of javascript to make the pages that 
@@ -76,7 +82,8 @@ def epic_grab(title):
             games[index]=games[index]+"----Orignal Price: "+price['price']['totalPrice']['fmtPrice']['originalPrice']+"----Discount Price: "+price['price']['totalPrice']['fmtPrice']['discountPrice']
             prices.append(price['price']['totalPrice']['fmtPrice']['intermediatePrice'])
             index+=1
-        return games,prices
+        return games
+       
     
 def ebay_grab(title):
     title=title.lower().replace(" ","+")
@@ -105,11 +112,11 @@ def ebay_grab(title):
 # shipping can have threee forms with the normal shipping info or sepcial shipping either with X amount of days within a span
 #or special shipping without the extra span
          shipping=li.find("span",class_="s-item__shipping")
-         print(shipping)
+         #print(shipping)
          if not shipping:
              shipping=li.find("span",class_="s-item__dynamic")
              shipping=shipping.contents[0]
-         print(shipping)
+         #print(shipping)
          try:
              shipping=shipping.text
          except:
@@ -127,5 +134,5 @@ def ebay_grab(title):
     return listings,url_list
     
     
-    
+
 
