@@ -60,16 +60,18 @@ def epic_grab(title):
  
     api = EpicGamesStoreAPI()
     game_raw=api.fetch_store_games(count=3,keywords=title)
+    #creates a huge dictionary list with elements holding the different listings
     game_list=game_raw['data']['Catalog']['searchStore']['elements']
     games=[]
     prices=[]
+    #execption if for when no games with the title are found
     if not game_list:
        return "No games with title "+title+" were found :("
     else:
         for game in game_list:
             games.append(game['title'])
         index=0
-        
+        #filters the needed data out of the dictionary with many catagories of info within it
         for price in game_list:
             games[index]=games[index]+"----Orignal Price: "+price['price']['totalPrice']['fmtPrice']['originalPrice']+"----Discount Price: "+price['price']['totalPrice']['fmtPrice']['discountPrice']
             prices.append(price['price']['totalPrice']['fmtPrice']['intermediatePrice'])
@@ -83,11 +85,11 @@ def ebay_grab(title):
     #pulls the html from the site
     r=requests.get(search_url).text
     soup = BeautifulSoup(r, 'lxml')
-    
+    #the li on the page each hold one listing with the price, format, and shipping info within them 
     li_list=soup.find_all("div",class_="s-item__wrapper")
     li_list.pop(0)
     listings=[]
-    
+    #extracts title, price, format and shipping
     for li in li_list:
     
          title=li.find("h3",class_="s-item__title")
@@ -100,13 +102,18 @@ def ebay_grab(title):
          if not format:
              format=li.find("span",class_="s-item__bids")
          format=format.text
-
+# shipping can have threee forms with the normal shipping info or sepcial shipping either with X amount of days within a span
+#or special shipping without the extra span
          shipping=li.find("span",class_="s-item__shipping")
+         print(shipping)
          if not shipping:
-             shipping=li.find("span",class_="POSITIVE BOLD")
-         shipping=shipping.text
-         
-
+             shipping=li.find("span",class_="s-item__dynamic")
+             shipping=shipping.contents[0]
+         print(shipping)
+         try:
+             shipping=shipping.text
+         except:
+            pass
          listings.append(title+"----"+price+"----"+format+"----"+shipping)
                 
     url_list=[]
@@ -120,5 +127,5 @@ def ebay_grab(title):
     return listings,url_list
     
     
-
+    
 

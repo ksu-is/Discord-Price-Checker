@@ -37,7 +37,7 @@ async def on_ready():
     print(f'Guild Members:\n {members}')
 
 
-@bot.command(name="price", help="Will pull the price of the game title from several sites, to call send \"\\price\" and the title of the game.")
+@bot.command(name="price", help="Pulls the price of the game title from several sites, to call send \"\\price\" and the title of the game.")
 async def on_message(ctx,*,message):
     await ctx.send("Searching steam for "+message)
     steam_package= steam_grab(message)
