@@ -21,10 +21,11 @@
 ## Sprint 3
 ***
 - [x] Finish scrapping function for remaining sites
-- [] Create PowerPoint slide
-- [] Troubleshoot remaining errors 
+- [X] Create PowerPoint slide
+- [X] Troubleshoot remaining errors 
 - [] Give presentation
 
 ## Extras(time permiting)
 - [] Add ability to pull list of games from sites according to a catagory (time permitting)
 - [] Implement a list function to add games to a list that the bot can recall for users
+- [X] Add function to call specific store
