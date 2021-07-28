@@ -1,10 +1,7 @@
 
-
 from bs4 import BeautifulSoup
 from epicstore_api import EpicGamesStoreAPI
 import requests
-
-
 
 def steam_grab(title):
     title=title.lower().replace(" ","+")
@@ -57,8 +54,6 @@ def steam_grab(title):
             title_list[index]=title_list[index]+"-------"+cost
             index+=1
         return title_list,summary,summary_url
-        
-         
 
 def epic_grab(title):
     #found an interface made to interact with EpicGamesStore due to the use of javascript to make the pages that 
@@ -72,7 +67,7 @@ def epic_grab(title):
     prices=[]
     #execption if for when no games with the title are found
     if not game_list:
-       return "No games with title "+title+" were found :("
+       return "No games with title \""+title+"\" were found :frowning2:"
     else:
         for game in game_list:
             games.append(game['title'])
@@ -84,7 +79,6 @@ def epic_grab(title):
             index+=1
         return games
        
-    
 def ebay_grab(title):
     title=title.lower().replace(" ","+")
     search_url="https://www.ebay.com/sch/i.html?_from=R40&_trksid=p2334524.m570.l1313&_nkw="+title+"&_sacat=1249&LH_TitleDesc=0"
