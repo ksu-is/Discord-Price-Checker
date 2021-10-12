@@ -2,6 +2,10 @@
 from bs4 import BeautifulSoup
 from epicstore_api import EpicGamesStoreAPI
 import requests
+from requests_html import *
+
+
+
 
 def steam_grab(title):
     title=title.lower().replace(" ","+")
@@ -78,7 +82,33 @@ def epic_grab(title):
             prices.append(price['price']['totalPrice']['fmtPrice']['intermediatePrice'])
             index+=1
         return games
-       
+
+def play_grab(title):
+    title=title.lower().replace(" ","%20")
+    search_url="https://store.playstation.com/en-us/search/"+title
+    print(search_url)
+    session=HTMLSession()
+    
+    r=session.get(search_url)
+    r.html.render()
+    soup = BeautifulSoup(r.html.html, 'lxml')
+    
+    game_raw=soup.find("ul",class_="ems-sdk-product-tile-list").text
+    game_list=game_raw.find_all("li",class_="psw-cell")
+    games=[]
+    index=0
+    for game in game_list:
+        title=game
+        title=title.find("span",class_="psw-body-2 psw-truncate-text-2 psw-p-t-2xs").text
+        games.append(title)
+        price=game
+        price=price.find("span",class_="price").text
+        games[index]=games[index]+"----"+price
+        index+=1
+    return games
+    
+        
+
 def ebay_grab(title):
     title=title.lower().replace(" ","+")
     search_url="https://www.ebay.com/sch/i.html?_from=R40&_trksid=p2334524.m570.l1313&_nkw="+title+"&_sacat=1249&LH_TitleDesc=0"
@@ -126,7 +156,5 @@ def ebay_grab(title):
     del url_list[0]
     
     return listings,url_list
-    
-    
 
-
+print(play_grab("portal"))

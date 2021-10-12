@@ -53,6 +53,13 @@ async def on_message(ctx,*,message):
         await ctx.send(steam_summary)
         await ctx.send(steam_url)
         
+    
+    play_package=play_grab(message)
+    await ctx.send("Searching playstation store for "+message)
+    await ctx.send("Top results:")
+    await ctx.send(play_package[0])
+    await ctx.send(play_package[1])
+    await ctx.send(play_package[2])    
     ebay_package=ebay_grab(message)
     await ctx.send("Searching ebay for "+message)
     ebay_titles=ebay_package[0]
@@ -70,7 +77,12 @@ async def on_message(ctx,*,message):
     else:
         print(epic_package)
         await ctx.send(epic_package)
-@bot.command(name="store", help="Pulls the price of the game title from several sites, to call send \"\\price\" and the title of the game.")
+    play_package=play_grab(message)
+    await ctx.send("Searching playstation store for "+message)
+    await ctx.send("Top results:")
+    for game in range(0,3):
+        await ctx.send(play_package[game])
+@bot.command(name="store", help="enter name of \"store\" and the \"title\" in separate quotations.")
 async def on_message(ctx,store : str,title : str):
     if store.lower()=="steam":
         await ctx.send("Searching steam for "+title)
@@ -85,6 +97,16 @@ async def on_message(ctx,store : str,title : str):
             await ctx.send("Top result from steam "+title+" is "+steam_titles[0].title())
             await ctx.send(steam_summary)
             await ctx.send(steam_url)
+
+    elif store.lower()=="play" or "playstation"or"play station":
+        play_package=play_grab(title)
+        await ctx.send("Searching playstation store for "+title)
+        await ctx.send("Top results:")
+        await ctx.send(play_package[0])
+        await ctx.send(play_package[1])
+        await ctx.send(play_package[2])
+
+
     elif store.lower()=="ebay":
         ebay_package=ebay_grab(title)
         await ctx.send("Searching ebay for "+title)
@@ -105,7 +127,9 @@ async def on_message(ctx,store : str,title : str):
             print(epic_package)
             await ctx.send(epic_package)
     else:
-        await ctx.send("Only three store currently: Steam, eBay, Epic")
+        await ctx.send("Only three stores currently: Steam, eBay, Epic")
     
 
 bot.run(TOKEN)
+
+
