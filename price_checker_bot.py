@@ -18,7 +18,7 @@ load_dotenv()
 TOKEN=os.getenv('DISCORD_TOKEN')
 GUILD=os.getenv('DISCORD_GUILD')
 #this is the command character that tells the bot the message is a command it must start with this character to be seen as one
-bot = commands.Bot(command_prefix="\\")
+bot = commands.Bot(command_prefix="~")
 
 @bot.event
 async def on_ready():
@@ -37,7 +37,7 @@ async def on_ready():
     print(f'Guild Members:\n {members}')
 
 
-@bot.command(name="price", help="Pulls the price of the game title from several sites, to call send \"\\price\" and the title of the game.")
+@bot.command(name="price", help="Pulls the price of the game title from several sites, to call send \"~price\" and the title of the game.")
 async def on_message(ctx,*,message):
     #await ctx.send("Where do you want to search (Steam, Ebay, or Epic)")
     await ctx.send("Searching steam for "+message)
@@ -57,9 +57,7 @@ async def on_message(ctx,*,message):
     play_package=play_grab(message)
     await ctx.send("Searching playstation store for "+message)
     await ctx.send("Top results:")
-    await ctx.send(play_package[0])
-    await ctx.send(play_package[1])
-    await ctx.send(play_package[2])    
+    for game in range (3):await ctx.send(play_package[game])
     ebay_package=ebay_grab(message)
     await ctx.send("Searching ebay for "+message)
     ebay_titles=ebay_package[0]
@@ -98,15 +96,6 @@ async def on_message(ctx,store : str,title : str):
             await ctx.send(steam_summary)
             await ctx.send(steam_url)
 
-    elif store.lower()=="play" or "playstation"or"play station":
-        play_package=play_grab(title)
-        await ctx.send("Searching playstation store for "+title)
-        await ctx.send("Top results:")
-        await ctx.send(play_package[0])
-        await ctx.send(play_package[1])
-        await ctx.send(play_package[2])
-
-
     elif store.lower()=="ebay":
         ebay_package=ebay_grab(title)
         await ctx.send("Searching ebay for "+title)
@@ -114,6 +103,7 @@ async def on_message(ctx,store : str,title : str):
         ebay_urls=ebay_package[1]
         await ctx.send("Top three results from ebay for "+title+":")
         await ctx.send(ebay_titles[0]+"\n"+ebay_titles[1]+"\n"+ebay_titles[2])
+
     elif store.lower()=="epic":
         epic_package=epic_grab(title)
         await ctx.send("Searching Epic Game Store for "+title)
@@ -126,6 +116,16 @@ async def on_message(ctx,store : str,title : str):
         else:
             print(epic_package)
             await ctx.send(epic_package)
+
+    elif store.lower()=="play" or "playstation"or"play station"or'ps':
+        play_package=play_grab(title)
+        await ctx.send("Searching playstation store for "+title)
+        await ctx.send("Top results:")
+        await ctx.send(play_package[0])
+        await ctx.send(play_package[1])
+        await ctx.send(play_package[2])
+
+
     else:
         await ctx.send("Only three stores currently: Steam, eBay, Epic")
     

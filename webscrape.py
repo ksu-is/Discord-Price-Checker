@@ -1,9 +1,14 @@
 
+import os
+from pickle import TRUE
+from attr import attr
 from bs4 import BeautifulSoup
 from epicstore_api import EpicGamesStoreAPI
 import requests
+import selenium
 from requests_html import *
-
+from selenium import webdriver
+from get_gecko_driver import GetGeckoDriver
 
 
 
@@ -87,25 +92,39 @@ def play_grab(title):
     title=title.lower().replace(" ","%20")
     search_url="https://store.playstation.com/en-us/search/"+title
     print(search_url)
-    session=HTMLSession()
+    #session=HTMLSession()
     
-    r=session.get(search_url)
-    r.html.render()
-    soup = BeautifulSoup(r.html.html, 'lxml')
-    
-    game_raw=soup.find("ul",class_="ems-sdk-product-tile-list").text
-    game_list=game_raw.find_all("li",class_="psw-cell")
+    #r=session.get(search_url)
+    #r.html.render()
+    get_driver = GetGeckoDriver()
+    get_driver.install()
+    firefox_options=webdriver.FirefoxOptions()
+    firefox_options.add_argument("--headless")
+
+    browser = webdriver.Firefox(options=firefox_options)
+    browser.get(search_url)
+    source = browser.page_source
+    browser.quit()
+    #soup = BeautifulSoup(r.html.html, 'lxml')
+    soup = BeautifulSoup(source, "html.parser")
+    game_raw=soup.find("ul",class_=("psw-1-grid","psw-grid-list"))
+    game_list=game_raw.find_all("li",class_="")
     games=[]
     index=0
     for game in game_list:
         title=game
-        title=title.find("span",class_="psw-body-2 psw-truncate-text-2 psw-p-t-2xs").text
+        title=title.find("span",class_=("psw-m-b-2")).text
         games.append(title)
         price=game
-        price=price.find("span",class_="price").text
+        price=price.find("span",class_="psw-m-r-3").text
         games[index]=games[index]+"----"+price
         index+=1
+    
     return games
+    #return game_list[0].find("span",class_="psw-m-b-2").text
+    #<span data-qa="search#productTile1#price#display-price" aria-hidden="false" class="psw-m-r-3">$2.99</span>
+    #<span data-qa="search#productTile0#product-name" class="psw-t-body psw-c-t-1 psw-t-truncate-2 psw-m-b-2">Portal Knights</span>
+    #<span data-qa="search#productTile1#product-name" class="psw-t-body psw-c-t-1 psw-t-truncate-2 psw-m-b-2">Pinball FX3 - Portal&nbsp;® Pinball</span>
     
         
 
@@ -157,4 +176,4 @@ def ebay_grab(title):
     
     return listings,url_list
 
-print(play_grab("portal"))
+#print(play_grab("uncharted"))
